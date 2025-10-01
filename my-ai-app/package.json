@@ -1,26 +1,25 @@
+
 {
-  "name": "eai-uu",
+  "name": "my-ai-app",
   "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
-    "start": "next start -p 3000"
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "axios": "^1.6.0",
+    "axios": "^1.6.7",
     "cheerio": "^1.0.0-rc.12",
-    "lru-cache": "^10.2.0",
-    "next": "14",
+    "next": "14.2.3",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.41",
-    "tailwindcss": "^3.4.10",
-    "typescript": "^5.5.4"
+    "autoprefixer": "^10.4.15",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.4.0"
   }
-}
-
 }
