@@ -1,9 +1,8 @@
-
-import { LRUCache } from 'lru-cache'
+import LRUCache from 'lru-cache'
 
 const cache = new LRUCache<string, any>({
-  max: 500,
-  ttl: 1000 * 60 * 5 
+  max: 100,
+  ttl: 1000 * 60 * 5
 })
 
 export function getCached(key: string) {
