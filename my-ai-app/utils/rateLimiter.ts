@@ -1,36 +1,25 @@
-import { LRUCache } from "lru-cache";
+import { LRUCache } from 'lru-cache'
 
-const tokenCache = new LRUCache<string, { tokens: number; last: number }>({
-  max: 500,
-  ttl: 1000 * 60 * 60, // 1 jam
-});
+const rateLimitCache = new LRUCache<string, { count: number; last: number }>({
+  max: 1000,
+  ttl: 1000 * 60 // 1 menit
+})
 
-export function rateLimiter(
-  key: string,
-  limit: number,
-  windowMs: number
-): boolean {
-  const entry = tokenCache.get(key);
+export function checkRateLimit(ip: string, limit = 10) {
+  const now = Date.now()
+  const entry = rateLimitCache.get(ip)
 
   if (!entry) {
-    tokenCache.set(key, { tokens: limit - 1, last: Date.now() });
-    return true;
+    rateLimitCache.set(ip, { count: 1, last: now })
+    return true
   }
 
-  const now = Date.now();
-  const elapsed = now - entry.last;
-  const refill = Math.floor(elapsed / windowMs);
-
-  if (refill > 0) {
-    entry.tokens = Math.min(limit, entry.tokens + refill);
-    entry.last = now;
+  if (entry.count >= limit) {
+    return false
   }
 
-  if (entry.tokens > 0) {
-    entry.tokens -= 1;
-    tokenCache.set(key, entry);
-    return true;
-  }
-
-  return false;
+  entry.count += 1
+  entry.last = now
+  rateLimitCache.set(ip, entry)
+  return true
 }
