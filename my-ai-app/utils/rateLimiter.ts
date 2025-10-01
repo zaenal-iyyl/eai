@@ -1,25 +1,21 @@
-import { LRUCache } from 'lru-cache'
+const requests = new Map<string, { count: number; resetAt: number }>()
 
-const rateLimitCache = new LRUCache<string, { count: number; last: number }>({
-  max: 1000,
-  ttl: 1000 * 60 // 1 menit
-})
-
-export function checkRateLimit(ip: string, limit = 10) {
+export function checkRateLimit(ip: string) {
+  const limit = 5
+  const windowMs = 60 * 1000
   const now = Date.now()
-  const entry = rateLimitCache.get(ip)
+  const entry = requests.get(ip)
 
-  if (!entry) {
-    rateLimitCache.set(ip, { count: 1, last: now })
-    return true
+  if (!entry || now > entry.resetAt) {
+    requests.set(ip, { count: 1, resetAt: now + windowMs })
+    return { ok: true, resetAt: now + windowMs }
   }
 
-  if (entry.count >= limit) {
-    return false
+  if (entry.count < limit) {
+    entry.count++
+    requests.set(ip, entry)
+    return { ok: true, resetAt: entry.resetAt }
   }
 
-  entry.count += 1
-  entry.last = now
-  rateLimitCache.set(ip, entry)
-  return true
+  return { ok: false, resetAt: entry.resetAt }
 }
