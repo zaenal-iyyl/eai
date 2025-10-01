@@ -1,7 +1,15 @@
 
-import { LRUCache } from "lru-cache";
+import { LRUCache } from 'lru-cache'
 
-export const cache = new LRUCache<string, any>({
-  max: 100,                
-  ttl: 1000 * 60 * 5,      
-});
+const cache = new LRUCache<string, any>({
+  max: 500,
+  ttl: 1000 * 60 * 5 
+})
+
+export function getCached(key: string) {
+  return cache.get(key)
+}
+
+export function setCached(key: string, value: any) {
+  cache.set(key, value)
+}
