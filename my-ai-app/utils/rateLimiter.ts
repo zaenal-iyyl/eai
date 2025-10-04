@@ -1,4 +1,3 @@
-
 import { LRUCache } from "lru-cache"
 
 const rateLimitCache = new LRUCache<string, { count: number; lastRequest: number }>({
@@ -6,21 +5,21 @@ const rateLimitCache = new LRUCache<string, { count: number; lastRequest: number
   ttl: 1000 * 60
 })
 
-export function rateLimiter(identifier: string, limit: number, windowMs: number) {
+export function checkRateLimit(identifier: string, limit = 5, windowMs = 60_000) {
   const now = Date.now()
   const existing = rateLimitCache.get(identifier)
 
   if (existing) {
     if (now - existing.lastRequest < windowMs) {
       if (existing.count >= limit) {
-        return false
+        return { ok: false, resetAt: existing.lastRequest + windowMs }
       }
       existing.count += 1
       rateLimitCache.set(identifier, existing)
-      return true
+      return { ok: true }
     }
   }
 
   rateLimitCache.set(identifier, { count: 1, lastRequest: now })
-  return true
+  return { ok: true }
 }
